@@ -22,7 +22,7 @@ class TurkishCoffeeMakerSHOP(QMainWindow):
     def update_table(self):
         coffee = self.cur.execute("""SELECT * FROM Coffee""").fetchall()
         if not coffee:
-            self.statusbar.showMessage("Информация не найдена")
+            self.statusbar.showMessage("Информация не найдена!")
             return
         self.statusbar.clear()
         self.tableWidget.setRowCount(len(coffee))
