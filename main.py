@@ -1,20 +1,20 @@
 import sys
 
-from PyQt6 import uic
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon, QAction
-from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMenu, QTableWidget, QComboBox, QSpinBox, \
-    QDoubleSpinBox, QMessageBox
+from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMenu, QMessageBox
 import sqlite3
+from UI.mainUI import Ui_MainWindow as MainUI
+from UI.addEditCoffeeForm import Ui_MainWindow as AddCoffeeFormUI
 
 
-class AddEditCoffeeSHOP(QMainWindow):
+class AddEditCoffeeSHOP(QMainWindow, AddCoffeeFormUI):
     def __init__(self, parent=None, coffee_id=None):
         super().__init__(parent)
-        self.con = sqlite3.connect("coffee.sqlite")
+        self.setupUi(self)
+        self.con = sqlite3.connect("data/coffee.sqlite")
         self.cur = self.con.cursor()
         coffee_id = coffee_id
-        uic.loadUi("addEditCoffeeForm.ui", self)
         if coffee_id is not None:
             self.setWindowTitle("TURKISHCOFFEEEDIT")
             self.pushButton.setText("Отредактировать")
@@ -86,12 +86,12 @@ class AddEditCoffeeSHOP(QMainWindow):
         self.close()
 
 
-class TurkishCoffeeMakerSHOP(QMainWindow):
+class TurkishCoffeeMakerSHOP(QMainWindow, MainUI):
     def __init__(self):
         super().__init__()
-        self.setWindowIcon(QIcon("daxak.jpg"))
-        uic.loadUi("main.ui", self)
-        self.con = sqlite3.connect("coffee.sqlite")
+        self.setupUi(self)
+        self.setWindowIcon(QIcon("data/daxak.jpg"))
+        self.con = sqlite3.connect("data/coffee.sqlite")
         self.cur = self.con.cursor()
         self.update_table()
         self.tableWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
@@ -116,22 +116,22 @@ class TurkishCoffeeMakerSHOP(QMainWindow):
     def initMenu(self, pos):
         global_pos = self.tableWidget.mapToGlobal(pos)
         self.context_menu = QMenu()
-        add_coffee_action = QAction(QIcon("iconplus.png"), "Добавить", self)
+        add_coffee_action = QAction(QIcon("data/iconplus.png"), "Добавить", self)
         add_coffee_action.triggered.connect(self.add_coffee)
         self.context_menu.addAction(add_coffee_action)
         selected_items = self.tableWidget.selectedItems()
         selected_row = self.tableWidget.currentRow()
         if selected_row >= 0:
-            edit_coffee_action = QAction(QIcon("iconedit.png"), "Изменить", self)
+            edit_coffee_action = QAction(QIcon("data/iconedit.png"), "Изменить", self)
             edit_coffee_action.triggered.connect(
                 lambda: self.edit_coffee(int(self.tableWidget.item(selected_row, 0).text())))
             self.context_menu.addAction(edit_coffee_action)
         if selected_items:
             if len(selected_items) == 1:
-                delete_coffee_action = QAction(QIcon("icondelete.png"), "Удалить", self)
+                delete_coffee_action = QAction(QIcon("data/icondelete.png"), "Удалить", self)
                 delete_coffee_action.triggered.connect(lambda: self.delete_coffee(selected_items))
             else:
-                delete_coffee_action = QAction(QIcon("icondelete.png"), "Удалить выбранные", self)
+                delete_coffee_action = QAction(QIcon("data/icondelete.png"), "Удалить выбранные", self)
                 delete_coffee_action.triggered.connect(lambda: self.delete_coffee(selected_items))
             self.context_menu.addAction(delete_coffee_action)
 
